@@ -1,0 +1,70 @@
+---
+title: "JLEWIS Final Project"
+author: "Jenn Lewis"
+date: "2/26/2019"
+output: html_document
+---
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+
+library(gghighlight)
+library(tidyverse)
+library(dplyr)
+library(rio)
+library(here)
+library(ggrepel)
+
+
+
+data1 <- import(here("data", "Full_Data.csv")) 
+
+```
+
+
+
+```{r Figure 1}
+#Show Heart Rate Data Over Time for Two Groups
+
+#Convert Group to Factor
+data1$Group <- as.factor(data1$Group)
+
+data1$Group <- recode(data1$Group, '1' = "Control Group", '2' = "BPD Group")
+
+#Clean Data to proper format
+HRV1 <- data1 %>%
+  gather(key = HRV_Segment, value = RSA, RSA_1, RSA_2, RSA_3, RSA_4, RSA_5, RSA_6, RSA_7, RSA_8, na.rm =TRUE) %>%
+  select(HRV_Segment, RSA, Group) %>%
+  filter(Group != "NA") %>%
+  group_by(Group, HRV_Segment) %>%
+  summarise(RSA = mean(RSA)) %>%
+  mutate(HRV_Segment = recode(HRV_Segment,
+                              "RSA_1" = "1",
+                              "RSA_2" = "2",
+                              "RSA_3" = "3",
+                              "RSA_4" = "4",
+                              "RSA_5" = "5",
+                              "RSA_6" = "6",
+                              "RSA_7" = "7",
+                              "RSA_8" = "8"))
+
+#Plot graph, want it to be a line graph, but doesn't show up for some reason
+HRV1 %>%
+  ggplot(aes(HRV_Segment, RSA)) +
+  geom_line(aes(color = Group)) +
+  theme_minimal () +
+  #ylim(0, 7) +
+  labs(y = "HRV",
+       x = "Segment",
+       title = "HRV across Time for BPD vs Control Group")
+
+```
+
+
+```{r Figure 2}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
