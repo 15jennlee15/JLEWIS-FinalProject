@@ -50,7 +50,7 @@ HRV1 <- data1 %>%
                               "RSA_7" = "7",
                               "RSA_8" = "8"))
 
-#Plot graph, want it to be a line graph, but doesn't show up for some reason
+#Plot graph, want it to be a line graph, but doesn't show up for some reason - points show up when I use geom_point but don't know why it isn't working with geom_line
 HRV1 %>%
   ggplot(aes(HRV_Segment, RSA)) +
   geom_line(aes(color = Group)) +
@@ -64,7 +64,33 @@ HRV1 %>%
 
 
 ```{r Figure 2}
-plot(pressure)
+#Convert scores to standardized scores
+data1 <- data1 %>%
+  mutate(HAMA_C = scale(HAMA, center = TRUE, scale = TRUE),
+         PHQ_C = scale(PHQ, center = TRUE, scale = TRUE),
+         DERS_C = scale(DERS, center = TRUE, scale = TRUE))
+
+#cleaning data
+Symptoms <- data1 %>%
+  gather(key = Symptom, value = Score, HAMA_C, PHQ_C, DERS_C, na.rm = TRUE) %>%
+  mutate(Symptom = recode(Symptom, 
+                           "HAMA_C" = "Anxiety",
+                           "PHQ_C" = "Depression",
+                           "DERS_C" = "Emotion Dysregulation")) %>%
+  group_by(Group, Symptom) %>%
+  summarise(Score = mean(Score)) %>%
+  filter(Group != "NA")
+  
+
+#Plot to show Mental Health Profile of Groups
+Symptoms %>%
+  ggplot(aes(Symptom, Score, fill = Group)) +
+  geom_col(position = "dodge") +
+  scale_color_viridis_d() +
+  labs(title = "Mental Health Profiles of Clinical and Non-Clinical Samples",
+       x = "Symptom",
+       y = "Score (standardized)")
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
