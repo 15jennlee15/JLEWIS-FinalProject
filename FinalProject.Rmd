@@ -86,11 +86,16 @@ Symptoms <- data1 %>%
 Symptoms %>%
   ggplot(aes(Symptom, Score, fill = Group)) +
   geom_col(position = "dodge") +
-  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
   labs(title = "Mental Health Profiles of Clinical and Non-Clinical Samples",
        x = "Symptom",
        y = "Score (standardized)")
 
 ```
 
+```{r Figure 3}
 
+
+
+
+```
