@@ -50,11 +50,11 @@ HRV1 <- data1 %>%
                               "RSA_7" = "7",
                               "RSA_8" = "8"))
 
-#Plot graph, want it to be a line graph, but doesn't show up for some reason - points show up when I use geom_point but don't know why it isn't working with geom_line
+
 HRV1 %>%
-  ggplot(aes(HRV_Segment, RSA)) +
+  ggplot(aes(HRV_Segment, RSA, group = Group)) +
   geom_line(aes(color = Group)) +
-  theme_minimal () +
+  theme_minimal() +
   #ylim(0, 7) +
   labs(y = "HRV",
        x = "Segment",
@@ -87,6 +87,7 @@ Symptoms %>%
   ggplot(aes(Symptom, Score, fill = Group)) +
   geom_col(position = "dodge") +
   scale_fill_viridis_d() +
+  theme_minimal() +
   labs(title = "Mental Health Profiles of Clinical and Non-Clinical Samples",
        x = "Symptom",
        y = "Score (standardized)")
@@ -95,7 +96,17 @@ Symptoms %>%
 
 ```{r Figure 3}
 
-
+data1 %>%
+  filter(Group != "NA") %>%
+  ggplot(aes(DERS, ColorWord_Score, color = Group)) +
+  geom_point() +
+  scale_colour_viridis_d(option = "civdis") +
+  geom_smooth(method = "lm", alpha = 0.1) +
+  theme_minimal() +
+  labs(title = "The Relationship Between Emotion Regulation and Inhibitory Control",
+       x = "Emotion Regulation Score (DERS)",
+       y = "Inhibitory Control (Stroop Score)")
+  
 
 
 ```
