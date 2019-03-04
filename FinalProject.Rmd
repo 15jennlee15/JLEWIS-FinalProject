@@ -5,37 +5,53 @@ date: "2/26/2019"
 output: html_document
 ---
 
-```{r setup}
+```{r setup,include=FALSE}
+
+# ASH: I added include = FALSE, because people don't really need to see this stuff in the knitted file
+
 knitr::opts_chunk$set(echo = TRUE,
                       message = FALSE,
                       warning = FALSE)
 
+# ASH: To enhance reproducability/make life easier on those reviewing your work, it may be worthwhile to include install.packages for each package you require:
+#install.packages("gghighlight")
+#install.packages("tidyverse")
+#install.packages("rio")
+#install.packages("here")
+#install.packages("ggrepel")
+#install.packages("magrittr")
+#install.packages("rcartocolor")
+
 library(gghighlight)
-library(tidyverse)
-library(dplyr)
+library(tidyverse) # ASH: I deleted dplyr because that's automatically installed with tidyverse
 library(rio)
 library(here)
 library(ggrepel)
-
-
+library(magrittr)
+library(rcartocolor)
 
 data1 <- import(here("data", "Full_Data.csv")) 
 
 ```
 
+### Plot 1
 
-
-```{r Figure 1}
+```{r Figure 1, fig.align='center'}
 #Show Heart Rate Data Over Time for Two Groups
 
 #Convert Group to Factor
-data1$Group <- as.factor(data1$Group)
+#data1$Group <- as.factor(data1$Group)
+#data1$Group <- recode(data1$Group, '1' = "Control Group", '2' = "BPD Group")
 
-data1$Group <- recode(data1$Group, '1' = "Control Group", '2' = "BPD Group")
+# ASH: another way to do the above via tidyverse is the following
+data1 %<>% # ASH: This symbol overrides your current dataset but requires the package magrittr (added above)
+  mutate(Group = recode(as.factor(Group),
+                        '1' = "Control Group",
+                        '2' = "BPD Group"))
 
 #Clean Data to proper format
 HRV1 <- data1 %>%
-  gather(key = HRV_Segment, value = RSA, RSA_1, RSA_2, RSA_3, RSA_4, RSA_5, RSA_6, RSA_7, RSA_8, na.rm =TRUE) %>%
+  gather(key = HRV_Segment, value = RSA, RSA_1:RSA_8, na.rm =TRUE) %>% # ASH: Adding ":" means you want to include variables RSA_1 through RSA_8
   select(HRV_Segment, RSA, Group) %>%
   filter(Group != "NA") %>%
   group_by(Group, HRV_Segment) %>%
@@ -53,19 +69,23 @@ HRV1 <- data1 %>%
 
 HRV1 %>%
   ggplot(aes(HRV_Segment, RSA, group = Group)) +
-  geom_line(aes(color = Group)) +
+  geom_line(aes(color = Group), size = 0.9) + # ASH: Increased thickness of lines
+  scale_color_carto_d(palette = "Burg") + # ASH: I changed the colors :) This requires the rcartocolor package
   theme_minimal() +
   #ylim(0, 7) +
   labs(y = "HRV",
        x = "Segment",
        title = "HRV across Time for BPD vs Control Group")
 
+# ASH: Interesting! Does something occur at Segment 5 to produce such an effect? If so, you could add a dashed verticle line with text specifing "Onset of X Manipulation". If this is for a scientific audience, I'd also add some way of visualizing uncertainty (you could just swap out geom_line for geom_smooth).
+
 ```
 
+### Plot 2
 
-```{r Figure 2}
+```{r Figure 2, fig.align='center'}
 #Convert scores to standardized scores
-data1 <- data1 %>%
+data1 %<>%
   mutate(HAMA_C = scale(HAMA, center = TRUE, scale = TRUE),
          PHQ_C = scale(PHQ, center = TRUE, scale = TRUE),
          DERS_C = scale(DERS, center = TRUE, scale = TRUE))
@@ -85,21 +105,30 @@ Symptoms <- data1 %>%
 #Plot to show Mental Health Profile of Groups
 Symptoms %>%
   ggplot(aes(Symptom, Score, fill = Group)) +
-  geom_col(position = "dodge") +
+  geom_col(position = "dodge", alpha = 0.7) + # ASH: Made the bars a little transparent
   scale_fill_viridis_d() +
   theme_minimal() +
   labs(title = "Mental Health Profiles of Clinical and Non-Clinical Samples",
        x = "Symptom",
-       y = "Score (standardized)")
+       y = "Score (standardized)") +
+  coord_flip() +
+  geom_hline(aes(yintercept = 0), #ASH: Added line to reference mean
+             color = "gray60",
+             size = 0.8,
+             lty = "dashed")
+
+# ASH: I really like the simplicity of this graph! I guess you might want to consider flipping the axes here? I think I may actually prefer the coord_flip, so I added it above.
 
 ```
 
-```{r Figure 3}
+### Plot 3
+
+```{r Figure 3, fig.align='center'}
 
 data1 %>%
-  filter(Group != "NA") %>%
+  filter(Group != "NA" & ColorWord_Score > 20) %>% # ASH: You might want to also filter out the outlier in the control group
   ggplot(aes(DERS, ColorWord_Score, color = Group)) +
-  geom_point() +
+  geom_point(alpha = 0.7) +
   scale_colour_viridis_d(option = "civdis") +
   geom_smooth(method = "lm", alpha = 0.1) +
   theme_minimal() +
@@ -107,6 +136,25 @@ data1 %>%
        x = "Emotion Regulation Score (DERS)",
        y = "Inhibitory Control (Stroop Score)")
   
-
+# ASH: Another nice graph--the only ways I could think of to improve it are to (1) add some transparency to your points and to (2) remove the outlier in your control group, both of which I added to the code above. One other thing to note is that not everyone is familiar with the DERS, so many may assume your plot suggests better emotion regulation is associated with worse inhibitiory control. I'd either just rename your titles to say "Emotion Dysregulation" or you could add a note/caption/subtitle explaining higher scores = less emotion regulation ability.
 
 ```
+
+### Ashley's peer review breakdown:
+
+**Three areas of strength:**
+
+  + Excellent coding style!
+      + Great use of commentary; I knew what you were trying to achieve with each chunk of code!
+      + Coding manual is followed
+      + You did a great job keeping the code simple and to the point
+      + I appreciated the fact that you didn’t have too many items in your environment
+  + Great graphical presentation:
+      + Good use of color-blind friendly palette
+      + Each graph is clear and illustrates a single point
+      + Assuming your audience is the scientific community/general audience, I think your graphs are accurately tuned for desired purpose.
+  + You applied all that we have learned involving the tidyverse very competently! Good job!
+
+**Something I Learned**
+
+  + I was unaware of the fact that you could alter the alpha level associated with the region of standard error--good to know!! The way you did it made me think you were modifying the alpha of the line itself.
