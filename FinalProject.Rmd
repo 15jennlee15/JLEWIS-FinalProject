@@ -90,6 +90,11 @@ Symptoms <- data1 %>%
   group_by(Group, Symptom) %>%
   summarise(Score = mean(Score)) %>%
   filter(Group != "NA")
+
+#TN: coded these variables as factor, otherwise ggplot cannot distiguish the different groups to build the plot
+
+Symptoms$Group<- as.factor(Symptoms$Group)
+Symptoms$Symptom<- as.factor(Symptoms$Symptom)
   
 
 #Plot to show Mental Health Profile of Groups
@@ -103,6 +108,13 @@ Symptoms %>%
        y = "Score (standardized)")
 
 ```
+
+
+##TN: 
+
+This graph looks good!! I can see that is good to show important difference between groups 1 and 2 for different symptoms. 
+It would be good to clarify in the plot what groups 1 and 2 are though! 
+Also, would there be a way for you to show uncertainty on these different measures (like standard error?) 
 
 ```{r Figure 3}
 
