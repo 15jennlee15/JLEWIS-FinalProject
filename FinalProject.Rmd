@@ -118,9 +118,15 @@ Also, would there be a way for you to show uncertainty on these different measur
 
 ```{r Figure 3}
 
-data1 %>%
-  filter(Group != "NA") %>%
-  ggplot(aes(DERS, ColorWord_Score, color = Group)) +
+##TN: again, coded Group as factor otherwise I cannot build the plot:
+
+library(magrittr)
+data1 %<>%
+  filter(Group != "NA")
+
+data1$Group<- as.factor(data1$Group)
+
+ggplot(data1, aes(DERS, ColorWord_Score, color = Group)) +
   geom_point() +
   scale_colour_viridis_d(option = "civdis") +
   geom_smooth(method = "lm", alpha = 0.1) +
@@ -132,3 +138,8 @@ data1 %>%
 
 
 ```
+
+
+##TN: 
+
+this is a nice graph! again, I wish I could know what group 1 and 2 represent ...  
