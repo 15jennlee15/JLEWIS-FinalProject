@@ -19,6 +19,7 @@ library(ggrepel)
 
 
 
+
 data1 <- import(here("data", "Full_Data.csv")) 
 
 ```
@@ -61,6 +62,15 @@ HRV1 %>%
        title = "HRV across Time for BPD vs Control Group")
 
 ```
+
+##TN: 
+
+Jenn, great coding fro cleaing data and niche graph! 
+It would be nice to have a little bit more description on what your main goal is for this visualization , but I think I get the main idea. 
+
+A line plot seems to be the best way to show how a variable changes across time - and the lines for the two different groups are easy to identify - however, I tink that there are a couple small changes you could do to make this plot stand out : maybe making the lines a bit thicker and using a different color palette good be great adds to your visualization ! also, if you are trying to highlight the big difference between the two groups at segment 7, maybe you could do that by adding a box around that area? or dots on those picks and a line connecting them? 
+
+
 
 
 ```{r Figure 2}
