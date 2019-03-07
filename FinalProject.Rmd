@@ -19,6 +19,7 @@ library(ggrepel)
 
 
 
+
 data1 <- import(here("data", "Full_Data.csv")) 
 
 ```
@@ -62,6 +63,15 @@ HRV1 %>%
 
 ```
 
+##TN: 
+
+Jenn, great coding fro cleaing data and niche graph! 
+It would be nice to have a little bit more description on what your main goal is for this visualization , but I think I get the main idea. 
+
+A line plot seems to be the best way to show how a variable changes across time - and the lines for the two different groups are easy to identify - however, I tink that there are a couple small changes you could do to make this plot stand out : maybe making the lines a bit thicker and using a different color palette good be great adds to your visualization ! also, if you are trying to highlight the big difference between the two groups at segment 7, maybe you could do that by adding a box around that area? or dots on those picks and a line connecting them? 
+
+
+
 
 ```{r Figure 2}
 #Convert scores to standardized scores
@@ -80,6 +90,11 @@ Symptoms <- data1 %>%
   group_by(Group, Symptom) %>%
   summarise(Score = mean(Score)) %>%
   filter(Group != "NA")
+
+#TN: coded these variables as factor, otherwise ggplot cannot distiguish the different groups to build the plot
+
+Symptoms$Group<- as.factor(Symptoms$Group)
+Symptoms$Symptom<- as.factor(Symptoms$Symptom)
   
 
 #Plot to show Mental Health Profile of Groups
@@ -94,12 +109,25 @@ Symptoms %>%
 
 ```
 
+
+##TN: 
+
+This graph looks good!! I can see that is good to show important difference between groups 1 and 2 for different symptoms. 
+It would be good to clarify in the plot what groups 1 and 2 are though! 
+Also, would there be a way for you to show uncertainty on these different measures (like standard error?) 
+
 ```{r Figure 3}
 
-data1 %>%
-  filter(Group != "NA") %>%
-  ggplot(aes(DERS, ColorWord_Score, color = Group)) +
-  geom_point() +
+##TN: again, coded Group as factor otherwise I cannot build the plot:
+
+library(magrittr)
+data1 %<>%
+  filter(Group != "NA")
+
+data1$Group<- as.factor(data1$Group)
+
+ggplot(data1, aes(DERS, ColorWord_Score, color = Group)) +
+  geom_point(alpha=.3) +
   scale_colour_viridis_d(option = "civdis") +
   geom_smooth(method = "lm", alpha = 0.1) +
   theme_minimal() +
@@ -110,3 +138,10 @@ data1 %>%
 
 
 ```
+
+
+##TN: 
+
+This is a nice graph and great to show interactions! again, I wish I could know what group 1 and 2 represent ...  
+I feel that the color yellow gets a little bit lost, especially the regression line. Have you considered trying a different color palette? 
+also, another thing that might hel with making this graph easier to interpet would be to make the data points a bit more transparent, so they dont overshadow the regression lines. I added this in the code by stating alpha = .4 .  
