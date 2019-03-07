@@ -127,7 +127,7 @@ data1 %<>%
 data1$Group<- as.factor(data1$Group)
 
 ggplot(data1, aes(DERS, ColorWord_Score, color = Group)) +
-  geom_point() +
+  geom_point(alpha=.3) +
   scale_colour_viridis_d(option = "civdis") +
   geom_smooth(method = "lm", alpha = 0.1) +
   theme_minimal() +
@@ -142,4 +142,6 @@ ggplot(data1, aes(DERS, ColorWord_Score, color = Group)) +
 
 ##TN: 
 
-this is a nice graph! again, I wish I could know what group 1 and 2 represent ...  
+This is a nice graph and great to show interactions! again, I wish I could know what group 1 and 2 represent ...  
+I feel that the color yellow gets a little bit lost, especially the regression line. Have you considered trying a different color palette? 
+also, another thing that might hel with making this graph easier to interpet would be to make the data points a bit more transparent, so they dont overshadow the regression lines. I added this in the code by stating alpha = .4 .  
